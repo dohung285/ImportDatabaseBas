@@ -40,7 +40,7 @@ public class DatabaseConfig {
     public void createTablesDef(Connection connection) throws SQLException {
 
         String sql = "" +
-                "	CREATE TABLE `ctm_job_def_fn06` (	" +
+                "	CREATE TABLE `ctm_job_def_new` (	" +
                 "	  `data_center` varchar(20) NOT NULL,	" +
                 "	  `job_name` varchar(64) NOT NULL,	" +
                 "	  `ver_seq` varchar(5) NOT NULL,	" +
@@ -150,17 +150,17 @@ public class DatabaseConfig {
         System.out.println("Drop table: " + tableName + " successful.....!");
     }
 
-    public Integer insertTableDef(Connection connection, String jobName, String orderYmd, String startTime, String endTime) throws SQLException {
+    public Integer insertTableDef(Connection connection, String jobName, String orderYmd, String groupName,String startTime, String endTime) throws SQLException {
 
         String sql = "" +
-                "	INSERT INTO `ctm_job_def_fn06` 														" +
+                "	INSERT INTO `ctm_job_def_new` 														" +
                 "	           (data_center,job_name,ver_seq,order_ymd,sched_table,appl_name,group_name,														" +
                 "	           description,active_from,task_type,memname,mem_lib,cmd_line,author,owner,														" +
                 "	           priority,critical,confirm_flag,cyclic,cyclic_type,cyclic_ind,cyclic_tolerance,cyclic_interval,														" +
                 "	           cyclic_interval_sequence,cyclic_specific_times,cyclic_max_rerun,node_id,days_and_or,														" +
                 "	           days_cal,weeks_cal,day_str,w_day_str,max_wait,from_time,to_time,														" +
                 "	           month_1,month_2,month_3,month_4,month_5,month_6,month_7,month_8,month_9,month_10,month_11,month_12,appl_type,appl_form)														" +
-                "	VALUES ('apuscm',?,'1',?,'bnexia01_svc','PD','PD02','aigi130b_jb_01','20190801','Job','aigi130b_jb_01.sh',														" +
+                "	VALUES ('apuscm',?,'1',?,'bnexia01_svc','PD',?,'aigi130b_jb_01','20190801','Job','aigi130b_jb_01.sh',														" +
                 "			'/exec_home1/app/script/ai/','','S32990','tuxedo','99','0','0','0',NULL,NULL,NULL,NULL,NULL,NULL,												" +
                 "	        0,'bnexia01_svc','O','SSCAL1','','','',7,?,?,'1','1','1','1','1','1','1','1','1','1','1','1','',''														" +
                 "		)													";
@@ -168,8 +168,9 @@ public class DatabaseConfig {
 
         preparedStatement.setString(1, jobName);
         preparedStatement.setString(2, orderYmd);
-        preparedStatement.setString(3, startTime);
-        preparedStatement.setString(4, endTime);
+        preparedStatement.setString(3, groupName);
+        preparedStatement.setString(4, startTime);
+        preparedStatement.setString(5, endTime);
         return preparedStatement.executeUpdate();
     }
 

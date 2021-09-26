@@ -180,14 +180,14 @@ public class TestMain {
             System.out.println("Choose 1 , 2 or 3 ");
             choose = scanner.nextInt();
             if (choose == 1) {
-                String tableName = "ctm_job_def_fn06";
+                String tableName = "ctm_job_def_new";
                 boolean tableExists = TableChecker.tableExists(connection, tableName);
-//                System.out.println("tableExists: " + tableExists);
+                System.out.println("tableExists: " + tableExists);
                 if (tableExists) {
-//                    databaseConfig.dropTables(connection, tableName);
+                    databaseConfig.dropTables(connection, tableName);
                 }
-//                databaseConfig.createTablesDef(connection);
-                System.out.println("Fake drop and create successfull!");
+                databaseConfig.createTablesDef(connection);
+                System.out.println("Create table " + tableName + " successfull!");
             } else if (choose == 2) {
                 String tableName = "ctm_job_act_fn06";
                 boolean tableExists = TableChecker.tableExists(connection, tableName);
@@ -207,6 +207,11 @@ public class TestMain {
     }
 
     private static void insertTabelDef(List<Integer> listYears, List<Character> listJobName, DatabaseConfig databaseConfig, Connection connection) {
+
+        String[] javaCharArray = {"SN08", "SN09", "SN10", "BN08", "VN08", "VN10", "FN98", "PN98", "IN08"};
+
+        List<String> listGroupName = Arrays.asList(javaCharArray);
+
         int numberOfElement = listYears.size();
 
         while (numberOfElement > 0) {
@@ -217,28 +222,33 @@ public class TestMain {
 
             for (int i = 1; i <= 12; i++) { // số tháng trong năm
                 List<String> listDay = generateDaysByNumber(year, i);
-                for (int j = 0; j < listJobName.size(); j++) { // số lượng job
+           //     for (int h = 0; h < listGroupName.size(); h++) {
+                    for (int j = 0; j < listJobName.size(); j++) { // số lượng job
+                        for (int k = 0; k < listDay.size(); k++) {// số ngày trong tháng
+                            // tạo start + end time
+                            Pair pair = generatePairTime();
+                            String start = pair.getStart();
+                            String end = pair.getEnd();
+                            String jobName = String.valueOf(listJobName.get(j));
+                            String orderYmd = year + formatMonth(i) + listDay.get(k);
+                            // lấy ra ngẫu nhiên một phần tử của listGroupName
+                            Random random = new Random();
+                            int indexOfGroupName = (random.nextInt(((listGroupName.size()-1) - 0) + 1) + 0);
+                            String groupName = listGroupName.get(indexOfGroupName);
 
-                    for (int k = 0; k < listDay.size(); k++) {// số ngày trong tháng
-                        // tạo start + end time
-                        Pair pair = generatePairTime();
-                        String start = pair.getStart();
-                        String end = pair.getEnd();
-                        String jobName = String.valueOf(listJobName.get(j));
-                        String orderYmd = year + formatMonth(i) + listDay.get(k);
-
-                        int row = 0;
-                        try {
-                            row = databaseConfig.insertTableDef(connection, jobName, orderYmd, start, end);
-                        } catch (SQLException throwables) {
-                            throwables.printStackTrace();
-                            System.out.println("Lỗi: " + throwables.getMessage());
-                        }
-                        if (row > 0) {
-                            System.out.println("Insert successfull at month = " + formatMonth(i) + " jobName= " + listJobName.get(j) + " day= " + listDay.get(k));
+                            int row = 0;
+                            try {
+                                row = databaseConfig.insertTableDef(connection, jobName, orderYmd, groupName, start, end);
+                            } catch (SQLException throwables) {
+                                throwables.printStackTrace();
+                                System.out.println("Lỗi: " + throwables.getMessage());
+                            }
+                            if (row > 0) {
+                                System.out.println("Insert successfull at month = " + formatMonth(i) + " jobName= " + listJobName.get(j) + " day= " + listDay.get(k));
+                            }
                         }
                     }
-                }
+               // }
                 System.out.println("======================== " + i + " ======================== ");
             }
 
@@ -356,7 +366,6 @@ public class TestMain {
             index++;
             numberElement++;
         }
-//        System.out.println("Number element: " + listReturn.size());
         System.out.println("listJobName: " + listReturn);
         return listReturn;
     }
